@@ -189,32 +189,81 @@
         
         console.log('Verification type:', verificationType, 'Token:', token);
         
-        // Verify the token with Firebase
+        // Verify the token with Firebase (client-side)
         async function verifyToken() {
             try {
-                // This would call your Firebase Cloud Function or backend API
-                const response = await fetch(`/api/verifyToken`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ 
-                        token: token,
-                        type: verificationType 
-                    })
-                });
+                // Import Firebase
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js');
+                const { getFirestore, doc, getDoc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
                 
-                const result = await response.json();
+                const firebaseConfig = {
+                    apiKey: "AIzaSyC8j70Zk-rxngvd6eOHlrsQ0dIePKj4nks",
+                    authDomain: "campus-life-b0fd3.firebaseapp.com",
+                    projectId: "campus-life-b0fd3",
+                    storageBucket: "campus-life-b0fd3.firebasestorage.app",
+                    messagingSenderId: "1028408297935",
+                    appId: "1:1028408297935:web:45a5f47a3a2d14f7482aba",
+                };
+
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
                 
-                if (result.success) {
-                    showSuccess();
-                    startCountdown();
-                } else {
-                    showError(result.error || 'Verification failed');
+                // Get verification token from Firestore
+                const tokenDoc = await getDoc(doc(db, 'verification_tokens', token));
+                
+                if (!tokenDoc.exists()) {
+                    showError('Invalid verification link');
+                    return;
                 }
+                
+                const tokenData = tokenDoc.data();
+                
+                // Check if token is already used
+                if (tokenData.used) {
+                    showError('This verification link has already been used');
+                    return;
+                }
+                
+                // Check if token is expired
+                if (tokenData.expires_at.toDate() < new Date()) {
+                    showError('This verification link has expired');
+                    return;
+                }
+                
+                // Check if token type matches
+                if (tokenData.type !== verificationType) {
+                    showError('Invalid verification link type');
+                    return;
+                }
+                
+                // Mark token as used
+                await updateDoc(doc(db, 'verification_tokens', token), { used: true });
+                
+                if (verificationType === 'email_verification') {
+                    // Mark user as verified
+                    await updateDoc(doc(db, 'users', tokenData.user_id), {
+                        email_verified: true,
+                        updated_at: new Date()
+                    });
+                    
+                    // Also update profiles collection if it exists
+                    try {
+                        await updateDoc(doc(db, 'profiles', tokenData.user_id), {
+                            email_verified: true,
+                            updated_at: new Date()
+                        });
+                    } catch (profileError) {
+                        // Profile might not exist, that's OK
+                        console.log('Profile update skipped');
+                    }
+                }
+                
+                showSuccess();
+                startCountdown();
+                
             } catch (error) {
                 console.error('Verification error:', error);
-                showError('Network error. Please check your connection and try again.');
+                showError('Verification failed. Please try again or contact support.');
             }
         }
         
