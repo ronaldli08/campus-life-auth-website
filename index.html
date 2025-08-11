@@ -141,7 +141,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="logo">📚</div>
+        <div class="logo">🎓</div>
         <h1>Campus Life</h1>
         
         <!-- Loading State -->
@@ -193,7 +193,7 @@
         async function verifyToken() {
             try {
                 // This would call your Firebase Cloud Function or backend API
-                const response = await fetch(`https://us-central1-your-project.cloudfunctions.net/verifyEmailToken`, {
+                const response = await fetch(`/api/verifyToken`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

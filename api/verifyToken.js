@@ -6,13 +6,12 @@ import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 // Initialize Firebase (use your config)
 const firebaseConfig = {
-  // Add your Firebase config here - should match your app
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
+  apiKey: process.env.FIREBASE_API_KEY || "AIzaSyC8j70Zk-rxngvd6eOHlrsQ0dIePKj4nks",
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN || "campus-life-b0fd3.firebaseapp.com",
+  projectId: process.env.FIREBASE_PROJECT_ID || "campus-life-b0fd3",
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "campus-life-b0fd3.firebasestorage.app",
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "1028408297935",
+  appId: process.env.FIREBASE_APP_ID || "1:1028408297935:web:45a5f47a3a2d14f7482aba",
 };
 
 const app = initializeApp(firebaseConfig);
