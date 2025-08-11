@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - Campus Life</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .status-message {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .loading {
+            background: #f0f9ff;
+            color: #0369a1;
+            border: 2px solid #e0f2fe;
+        }
+        
+        .success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 2px solid #dcfce7;
+        }
+        
+        .error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 2px solid #fecaca;
+        }
+        
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            margin: 20px 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .secondary-button {
+            background: #6b7280;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        footer {
+            margin-top: 30px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📚</div>
+        <h1>Campus Life</h1>
+        
+        <!-- Loading State -->
+        <div id="loading-state">
+            <div class="status-message loading">
+                <div class="spinner"></div>
+                <p>Verifying your email address...</p>
+                <small>Please wait while we process your verification.</small>
+            </div>
+        </div>
+        
+        <!-- Success State -->
+        <div id="success-state" class="hidden">
+            <div class="status-message success">
+                <h2>✅ Email Verified Successfully!</h2>
+                <p>Your Campus Life account is now active.</p>
+                <p>You will be redirected to the app in <span id="countdown">5</span> seconds...</p>
+            </div>
+            <a href="campuslife://verified" class="button">Open Campus Life App</a>
+            <button onclick="copyAppLink()" class="secondary-button">Copy App Link</button>
+        </div>
+        
+        <!-- Error State -->
+        <div id="error-state" class="hidden">
+            <div class="status-message error">
+                <h2>❌ Verification Failed</h2>
+                <p id="error-message">The verification link is invalid or has expired.</p>
+                <small>Please request a new verification email from the app.</small>
+            </div>
+            <a href="campuslife://verification-failed" class="button">Return to App</a>
+            <button onclick="location.reload()" class="secondary-button">Try Again</button>
+        </div>
+        
+        <footer>
+            <p>Campus Life - Connecting Families Through Wellness</p>
+            <small>Having trouble? Contact support at help@campus-life.app</small>
+        </footer>
+    </div>
+
+    <script>
+        // Extract token from URL path
+        const pathParts = window.location.pathname.split('/');
+        const verificationType = pathParts[pathParts.length - 2]; // email_verification or password_reset
+        const token = pathParts[pathParts.length - 1];
+        
+        console.log('Verification type:', verificationType, 'Token:', token);
+        
+        // Verify the token with Firebase
+        async function verifyToken() {
+            try {
+                // This would call your Firebase Cloud Function or backend API
+                const response = await fetch(`https://us-central1-your-project.cloudfunctions.net/verifyEmailToken`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        token: token,
+                        type: verificationType 
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess();
+                    startCountdown();
+                } else {
+                    showError(result.error || 'Verification failed');
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                showError('Network error. Please check your connection and try again.');
+            }
+        }
+        
+        function showSuccess() {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('success-state').classList.remove('hidden');
+        }
+        
+        function showError(message) {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('error-state').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+        
+        function startCountdown() {
+            let seconds = 5;
+            const countdownElement = document.getElementById('countdown');
+            
+            const countdown = setInterval(() => {
+                seconds--;
+                countdownElement.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(countdown);
+                    window.location.href = 'campuslife://verified';
+                }
+            }, 1000);
+        }
+        
+        function copyAppLink() {
+            navigator.clipboard.writeText('campuslife://verified').then(() => {
+                alert('App link copied to clipboard!');
+            }).catch(() => {
+                alert('Could not copy link. Please open the Campus Life app manually.');
+            });
+        }
+        
+        // Start verification when page loads
+        if (token && token !== 'undefined' && token !== '') {
+            verifyToken();
+        } else {
+            showError('Invalid verification link. Please check the link and try again.');
+        }
+        
+        // Handle app not installed case
+        setTimeout(() => {
+            // If user is still on page after trying to open app, show install message
+            const installMessage = document.createElement('div');
+            installMessage.innerHTML = `
+                <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 10px; color: #92400e;">
+                    <strong>App not installed?</strong><br>
+                    <small>Download Campus Life from the App Store or Google Play</small>
+                </div>
+            `;
+            // Don't show this for now - only if needed
+        }, 8000);
+    </script>
+</body>
+</html>

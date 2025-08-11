@@ -1,0 +1,16 @@
+{
+  "name": "campus-life-verification",
+  "version": "1.0.0",
+  "description": "Email verification website for Campus Life app",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build needed'",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "firebase": "^10.0.0"
+  },
+  "keywords": ["campus-life", "verification", "email"],
+  "author": "Campus Life Team"
+}
