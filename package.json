@@ -9,7 +9,7 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "firebase": "^10.0.0"
+    "firebase-admin": "^12.0.0"
   },
   "keywords": ["campus-life", "verification", "email"],
   "author": "Campus Life Team"
