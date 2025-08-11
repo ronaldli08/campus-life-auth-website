@@ -156,12 +156,12 @@
         <!-- Success State -->
         <div id="success-state" class="hidden">
             <div class="status-message success">
-                <h2>✅ Email Verified Successfully!</h2>
-                <p>Your Campus Life account is now active.</p>
-                <p>You will be redirected to the app in <span id="countdown">5</span> seconds...</p>
+                <h2 id="success-title">✅ Email Verified Successfully!</h2>
+                <p id="success-message">Your Campus Life account is now active.</p>
+                <p id="countdown-container">You will be redirected to the app in <span id="countdown">5</span> seconds...</p>
             </div>
-            <a href="campuslife://verified" class="button">Open Campus Life App</a>
-            <button onclick="copyAppLink()" class="secondary-button">Copy App Link</button>
+            <a href="" id="success-button" class="button">Open Campus Life App</a>
+            <button onclick="copyAppLink()" id="copy-button" class="secondary-button">Copy App Link</button>
         </div>
         
         <!-- Error State -->
@@ -276,11 +276,15 @@
                     } catch (profileError) {
                         console.log('Profile update skipped (might not exist)');
                     }
+                    
+                    console.log('Email verification complete!');
+                    showSuccess('email_verification');
+                    startCountdown('campuslife://verified');
+                } else if (verificationType === 'password_reset') {
+                    console.log('Password reset token verified, redirecting to app');
+                    showSuccess('password_reset', token);
+                    startCountdown(`campuslife://reset-password/${token}`);
                 }
-                
-                console.log('Verification complete!');
-                showSuccess();
-                startCountdown();
                 
             } catch (error) {
                 console.error('Verification error:', error);
@@ -288,9 +292,23 @@
             }
         }
         
-        function showSuccess() {
+        function showSuccess(type, resetToken = null) {
             document.getElementById('loading-state').classList.add('hidden');
             document.getElementById('success-state').classList.remove('hidden');
+            
+            if (type === 'password_reset') {
+                document.getElementById('success-title').textContent = '🔓 Password Reset Link Verified!';
+                document.getElementById('success-message').textContent = 'Click the button below to set your new password.';
+                document.getElementById('countdown-container').textContent = 'You will be redirected to set your new password in ' + document.getElementById('countdown').outerHTML + ' seconds...';
+                document.getElementById('success-button').textContent = 'Set New Password';
+                document.getElementById('copy-button').style.display = 'none';
+            } else {
+                document.getElementById('success-title').textContent = '✅ Email Verified Successfully!';
+                document.getElementById('success-message').textContent = 'Your Campus Life account is now active.';
+                document.getElementById('countdown-container').textContent = 'You will be redirected to the app in ' + document.getElementById('countdown').outerHTML + ' seconds...';
+                document.getElementById('success-button').textContent = 'Open Campus Life App';
+                document.getElementById('copy-button').style.display = 'inline-block';
+            }
         }
         
         function showError(message) {
@@ -299,9 +317,12 @@
             document.getElementById('error-message').textContent = message;
         }
         
-        function startCountdown() {
+        function startCountdown(redirectUrl) {
             let seconds = 5;
             const countdownElement = document.getElementById('countdown');
+            
+            // Update the button href
+            document.getElementById('success-button').href = redirectUrl;
             
             const countdown = setInterval(() => {
                 seconds--;
@@ -309,7 +330,7 @@
                 
                 if (seconds <= 0) {
                     clearInterval(countdown);
-                    window.location.href = 'campuslife://verified';
+                    window.location.href = redirectUrl;
                 }
             }, 1000);
         }
