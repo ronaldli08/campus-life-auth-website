@@ -1,8 +1,8 @@
 // Vercel serverless function to verify email tokens
 // This replaces the need for a separate backend server
 
-import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { initializeApp, getApps } from 'firebase/app';
+import { getFirestore, doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 
 // Initialize Firebase (use your config)
 const firebaseConfig = {
@@ -14,7 +14,8 @@ const firebaseConfig = {
   appId: process.env.FIREBASE_APP_ID || "1:1028408297935:web:45a5f47a3a2d14f7482aba",
 };
 
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase app only if not already initialized
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getFirestore(app);
 
 export default async function handler(req, res) {
@@ -74,14 +75,14 @@ export default async function handler(req, res) {
       // Mark user as verified
       await updateDoc(doc(db, 'users', tokenData.user_id), {
         email_verified: true,
-        updated_at: new Date()
+        updated_at: Timestamp.now()
       });
 
       // Also update profiles collection if it exists
       try {
         await updateDoc(doc(db, 'profiles', tokenData.user_id), {
           email_verified: true,
-          updated_at: new Date()
+          updated_at: Timestamp.now()
         });
       } catch (profileError) {
         // Profile might not exist for parents, that's OK
