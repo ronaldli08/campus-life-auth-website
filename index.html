@@ -181,6 +181,10 @@
         </footer>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <script>
         // Extract token from URL path
         const pathParts = window.location.pathname.split('/');
@@ -192,10 +196,7 @@
         // Verify the token with Firebase (client-side)
         async function verifyToken() {
             try {
-                // Import Firebase
-                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js');
-                const { getFirestore, doc, getDoc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-                
+                // Initialize Firebase
                 const firebaseConfig = {
                     apiKey: "AIzaSyC8j70Zk-rxngvd6eOHlrsQ0dIePKj4nks",
                     authDomain: "campus-life-b0fd3.firebaseapp.com",
@@ -205,13 +206,13 @@
                     appId: "1:1028408297935:web:45a5f47a3a2d14f7482aba",
                 };
 
-                const app = initializeApp(firebaseConfig);
-                const db = getFirestore(app);
+                firebase.initializeApp(firebaseConfig);
+                const db = firebase.firestore();
                 
                 // Get verification token from Firestore
-                const tokenDoc = await getDoc(doc(db, 'verification_tokens', token));
+                const tokenDoc = await db.collection('verification_tokens').doc(token).get();
                 
-                if (!tokenDoc.exists()) {
+                if (!tokenDoc.exists) {
                     showError('Invalid verification link');
                     return;
                 }
@@ -237,18 +238,18 @@
                 }
                 
                 // Mark token as used
-                await updateDoc(doc(db, 'verification_tokens', token), { used: true });
+                await db.collection('verification_tokens').doc(token).update({ used: true });
                 
                 if (verificationType === 'email_verification') {
                     // Mark user as verified
-                    await updateDoc(doc(db, 'users', tokenData.user_id), {
+                    await db.collection('users').doc(tokenData.user_id).update({
                         email_verified: true,
                         updated_at: new Date()
                     });
                     
                     // Also update profiles collection if it exists
                     try {
-                        await updateDoc(doc(db, 'profiles', tokenData.user_id), {
+                        await db.collection('profiles').doc(tokenData.user_id).update({
                             email_verified: true,
                             updated_at: new Date()
                         });
