@@ -181,9 +181,13 @@
         </footer>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <!-- Firebase SDK v9 -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        
+        window.firebaseApp = { initializeApp, getFirestore, doc, getDoc, updateDoc };
+    </script>
 
     <script>
         // Extract token from URL path
@@ -198,6 +202,13 @@
             try {
                 console.log('Starting verification for:', { token, verificationType });
                 
+                // Wait for Firebase modules to load
+                while (!window.firebaseApp) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                const { initializeApp, getFirestore, doc, getDoc, updateDoc } = window.firebaseApp;
+                
                 // Initialize Firebase
                 const firebaseConfig = {
                     apiKey: "AIzaSyC8j70Zk-rxngvd6eOHlrsQ0dIePKj4nks",
@@ -208,17 +219,15 @@
                     appId: "1:1028408297935:web:45a5f47a3a2d14f7482aba",
                 };
 
-                if (!firebase.apps || !firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
-                }
-                const db = firebase.firestore();
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
                 
                 console.log('Firebase initialized, checking token...');
                 
                 // Get verification token from Firestore
-                const tokenDoc = await db.collection('verification_tokens').doc(token).get();
+                const tokenDoc = await getDoc(doc(db, 'verification_tokens', token));
                 
-                if (!tokenDoc.exists) {
+                if (!tokenDoc.exists()) {
                     console.log('Token not found in database');
                     showError('Invalid verification link');
                     return;
@@ -248,18 +257,18 @@
                 console.log('Token is valid, updating database...');
                 
                 // Mark token as used
-                await db.collection('verification_tokens').doc(token).update({ used: true });
+                await updateDoc(doc(db, 'verification_tokens', token), { used: true });
                 
                 if (verificationType === 'email_verification') {
                     // Mark user as verified
-                    await db.collection('users').doc(tokenData.user_id).update({
+                    await updateDoc(doc(db, 'users', tokenData.user_id), {
                         email_verified: true,
                         updated_at: new Date()
                     });
                     
                     // Also update profiles collection if it exists
                     try {
-                        await db.collection('profiles').doc(tokenData.user_id).update({
+                        await updateDoc(doc(db, 'profiles', tokenData.user_id), {
                             email_verified: true,
                             updated_at: new Date()
                         });
