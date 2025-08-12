@@ -1,6 +1,4 @@
-// Vercel serverless function to handle PayPal payment returns
-const PROJECT_ID = "campus-life-b0fd3";
-
+// Vercel serverless function to handle PayPal P2P payment cancellations
 module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -21,27 +19,29 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { paymentId, token, PayerID } = req.query;
-
-    if (!paymentId || !token) {
-      return res.status(400).json({ success: false, error: 'Missing payment parameters' });
-    }
-
-    // Here you would verify the PayPal payment with your backend
-    // For now, redirect to app with success
-    const redirectUrl = `campuslife://pay/return?paymentId=${paymentId}&token=${token}&PayerID=${PayerID}&status=success`;
+    console.log('PayPal cancel - Query params:', req.query);
+    
+    const { token, transactionId } = req.query;
+    
+    // Extract transaction ID from the query or use a default
+    const finalTransactionId = transactionId || 'unknown';
+    
+    // Create deep link URL for our app
+    const redirectUrl = `campuslife://paypal-return?transactionId=${finalTransactionId}&orderId=${token}&status=cancelled`;
+    
+    console.log('Redirecting to app (cancelled):', redirectUrl);
     
     // Create HTML page that redirects to app
     const html = `
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Payment Successful - Campus Life</title>
+          <title>Payment Cancelled - Campus Life</title>
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
             body {
               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
               min-height: 100vh;
               display: flex;
               align-items: center;
@@ -58,9 +58,14 @@ module.exports = async function handler(req, res) {
               max-width: 400px;
               width: 100%;
             }
-            .success { 
-              color: #10b981; 
+            .cancelled { 
+              color: #f59e0b; 
               margin-bottom: 20px; 
+              font-size: 48px;
+            }
+            .title {
+              color: #111827;
+              margin-bottom: 10px;
               font-size: 24px;
               font-weight: bold;
             }
@@ -68,9 +73,10 @@ module.exports = async function handler(req, res) {
               color: #6b7280;
               margin-bottom: 30px;
               font-size: 16px;
+              line-height: 1.5;
             }
             .button {
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
               color: white;
               padding: 18px 36px;
               text-decoration: none;
@@ -82,6 +88,7 @@ module.exports = async function handler(req, res) {
               transition: transform 0.2s;
               border: none;
               cursor: pointer;
+              width: 200px;
             }
             .button:hover {
               transform: translateY(-2px);
@@ -92,40 +99,46 @@ module.exports = async function handler(req, res) {
               margin-top: 20px;
             }
             .status {
-              background: #f0f9ff;
-              border: 1px solid #0ea5e9;
+              background: #fffbeb;
+              border: 1px solid #f59e0b;
               border-radius: 8px;
               padding: 16px;
               margin: 20px 0;
-              color: #0369a1;
+              color: #d97706;
             }
           </style>
         </head>
         <body>
           <div class="container">
-            <h1 class="success">✅ Payment Successful!</h1>
+            <div class="cancelled">⚠️</div>
+            <h1 class="title">Payment Cancelled</h1>
             <div class="status">
-              <strong>PayPal Payment Confirmed</strong><br>
-              Your payment has been processed and completed.
+              <strong>PayPal Payment Cancelled</strong><br>
+              You cancelled the payment process.
             </div>
             <p class="description">
-              You will be redirected to Campus Life automatically, or tap the button below.
+              No payment was processed. You can try again or return to Campus Life.
             </p>
             <button onclick="openApp()" class="button">Return to Campus Life</button>
-            <p class="countdown">Auto-redirecting in <span id="countdown">5</span> seconds...</p>
+            <p class="countdown">Auto-redirecting in <span id="countdown">3</span> seconds...</p>
           </div>
           <script>
-            let countdown = 5;
+            let countdown = 3;
             const countdownElement = document.getElementById('countdown');
+            const redirectUrl = '${redirectUrl}';
             
             function openApp() {
-              console.log('Attempting to open app:', '${redirectUrl}');
-              window.location.href = '${redirectUrl}';
+              console.log('Attempting to open app with URL:', redirectUrl);
               
-              // Fallback: try opening multiple times with delays
+              try {
+                window.location.href = redirectUrl;
+              } catch(e) {
+                console.log('Redirect failed:', e);
+              }
+              
               setTimeout(() => {
                 try {
-                  window.location.assign('${redirectUrl}');
+                  window.location.assign(redirectUrl);
                 } catch(e) {
                   console.log('Fallback redirect failed:', e);
                 }
@@ -143,9 +156,9 @@ module.exports = async function handler(req, res) {
               }
             }, 1000);
             
-            // Try immediate redirect for mobile browsers
+            // Immediate redirect for mobile
             if (navigator.userAgent.match(/iPhone|iPad|Android/i)) {
-              setTimeout(openApp, 1000);
+              setTimeout(openApp, 1500);
             }
           </script>
         </body>
@@ -156,19 +169,19 @@ module.exports = async function handler(req, res) {
     res.status(200).send(html);
 
   } catch (error) {
-    console.error('PayPal return handler error:', error);
+    console.error('PayPal cancel handler error:', error);
     
     const errorHtml = `
       <!DOCTYPE html>
       <html>
-        <head><title>Payment Error - Campus Life</title></head>
+        <head><title>Error - Campus Life</title></head>
         <body style="font-family: Arial; text-align: center; padding: 50px;">
-          <h1>❌ Payment Error</h1>
-          <p>There was an issue processing your payment.</p>
-          <a href="campuslife://pay/cancel?error=processing_failed" 
-             style="background: #ef4444; color: white; padding: 15px 30px; text-decoration: none; border-radius: 10px;">
+          <h1>❌ Error</h1>
+          <p>There was an issue processing the cancellation.</p>
+          <button onclick="window.location.href='campuslife://paypal-return?error=cancel_failed'" 
+                 style="background: #ef4444; color: white; padding: 15px 30px; border: none; border-radius: 10px;">
             Return to App
-          </a>
+          </button>
         </body>
       </html>
     `;
@@ -176,4 +189,4 @@ module.exports = async function handler(req, res) {
     res.setHeader('Content-Type', 'text/html');
     res.status(500).send(errorHtml);
   }
-}
+};

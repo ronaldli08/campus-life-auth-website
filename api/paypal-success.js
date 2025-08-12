@@ -1,6 +1,4 @@
-// Vercel serverless function to handle PayPal payment returns
-const PROJECT_ID = "campus-life-b0fd3";
-
+// Vercel serverless function to handle PayPal P2P payment success returns
 module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -21,15 +19,21 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { paymentId, token, PayerID } = req.query;
+    console.log('PayPal success - Query params:', req.query);
+    
+    const { token, PayerID, transactionId } = req.query;
 
-    if (!paymentId || !token) {
-      return res.status(400).json({ success: false, error: 'Missing payment parameters' });
+    if (!token) {
+      return res.status(400).json({ success: false, error: 'Missing PayPal order token' });
     }
 
-    // Here you would verify the PayPal payment with your backend
-    // For now, redirect to app with success
-    const redirectUrl = `campuslife://pay/return?paymentId=${paymentId}&token=${token}&PayerID=${PayerID}&status=success`;
+    // Extract transaction ID from the query or use a default
+    const finalTransactionId = transactionId || 'unknown';
+    
+    // Create deep link URL for our app
+    const redirectUrl = `campuslife://paypal-return?transactionId=${finalTransactionId}&orderId=${token}&payerID=${PayerID}&status=success`;
+    
+    console.log('Redirecting to app:', redirectUrl);
     
     // Create HTML page that redirects to app
     const html = `
@@ -41,7 +45,7 @@ module.exports = async function handler(req, res) {
           <style>
             body {
               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              background: linear-gradient(135deg, #10b981 0%, #059669 100%);
               min-height: 100vh;
               display: flex;
               align-items: center;
@@ -61,6 +65,11 @@ module.exports = async function handler(req, res) {
             .success { 
               color: #10b981; 
               margin-bottom: 20px; 
+              font-size: 48px;
+            }
+            .title {
+              color: #111827;
+              margin-bottom: 10px;
               font-size: 24px;
               font-weight: bold;
             }
@@ -68,9 +77,10 @@ module.exports = async function handler(req, res) {
               color: #6b7280;
               margin-bottom: 30px;
               font-size: 16px;
+              line-height: 1.5;
             }
             .button {
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              background: linear-gradient(135deg, #10b981 0%, #059669 100%);
               color: white;
               padding: 18px 36px;
               text-decoration: none;
@@ -82,6 +92,7 @@ module.exports = async function handler(req, res) {
               transition: transform 0.2s;
               border: none;
               cursor: pointer;
+              width: 200px;
             }
             .button:hover {
               transform: translateY(-2px);
@@ -92,44 +103,76 @@ module.exports = async function handler(req, res) {
               margin-top: 20px;
             }
             .status {
-              background: #f0f9ff;
-              border: 1px solid #0ea5e9;
+              background: #f0fdf4;
+              border: 1px solid #10b981;
               border-radius: 8px;
               padding: 16px;
               margin: 20px 0;
-              color: #0369a1;
+              color: #059669;
+            }
+            .debug {
+              background: #f3f4f6;
+              border-radius: 8px;
+              padding: 12px;
+              margin: 20px 0;
+              font-size: 12px;
+              color: #6b7280;
+              text-align: left;
             }
           </style>
         </head>
         <body>
           <div class="container">
-            <h1 class="success">✅ Payment Successful!</h1>
+            <div class="success">🎉</div>
+            <h1 class="title">Payment Completed!</h1>
             <div class="status">
-              <strong>PayPal Payment Confirmed</strong><br>
-              Your payment has been processed and completed.
+              <strong>PayPal Payment Successful</strong><br>
+              Your payment has been processed successfully.
             </div>
             <p class="description">
-              You will be redirected to Campus Life automatically, or tap the button below.
+              You will be automatically redirected to Campus Life to complete the verification process.
             </p>
             <button onclick="openApp()" class="button">Return to Campus Life</button>
-            <p class="countdown">Auto-redirecting in <span id="countdown">5</span> seconds...</p>
+            <p class="countdown">Auto-redirecting in <span id="countdown">3</span> seconds...</p>
+            
+            <div class="debug">
+              <strong>Debug Info:</strong><br>
+              Transaction ID: ${finalTransactionId}<br>
+              Order ID: ${token}<br>
+              Payer ID: ${PayerID || 'N/A'}
+            </div>
           </div>
           <script>
-            let countdown = 5;
+            let countdown = 3;
             const countdownElement = document.getElementById('countdown');
+            const redirectUrl = '${redirectUrl}';
             
             function openApp() {
-              console.log('Attempting to open app:', '${redirectUrl}');
-              window.location.href = '${redirectUrl}';
+              console.log('Attempting to open app with URL:', redirectUrl);
               
-              // Fallback: try opening multiple times with delays
+              // Multiple redirect attempts for better compatibility
+              try {
+                window.location.href = redirectUrl;
+              } catch(e) {
+                console.log('First redirect attempt failed:', e);
+              }
+              
+              // Fallback attempts
               setTimeout(() => {
                 try {
-                  window.location.assign('${redirectUrl}');
+                  window.location.assign(redirectUrl);
                 } catch(e) {
-                  console.log('Fallback redirect failed:', e);
+                  console.log('Second redirect attempt failed:', e);
                 }
               }, 500);
+              
+              setTimeout(() => {
+                try {
+                  window.open(redirectUrl, '_self');
+                } catch(e) {
+                  console.log('Third redirect attempt failed:', e);
+                }
+              }, 1000);
             }
             
             // Countdown timer
@@ -143,9 +186,10 @@ module.exports = async function handler(req, res) {
               }
             }, 1000);
             
-            // Try immediate redirect for mobile browsers
+            // Immediate redirect attempt for mobile browsers
             if (navigator.userAgent.match(/iPhone|iPad|Android/i)) {
-              setTimeout(openApp, 1000);
+              console.log('Mobile browser detected, attempting immediate redirect');
+              setTimeout(openApp, 1500);
             }
           </script>
         </body>
@@ -156,19 +200,20 @@ module.exports = async function handler(req, res) {
     res.status(200).send(html);
 
   } catch (error) {
-    console.error('PayPal return handler error:', error);
+    console.error('PayPal success handler error:', error);
     
     const errorHtml = `
       <!DOCTYPE html>
       <html>
-        <head><title>Payment Error - Campus Life</title></head>
-        <body style="font-family: Arial; text-align: center; padding: 50px;">
-          <h1>❌ Payment Error</h1>
-          <p>There was an issue processing your payment.</p>
-          <a href="campuslife://pay/cancel?error=processing_failed" 
-             style="background: #ef4444; color: white; padding: 15px 30px; text-decoration: none; border-radius: 10px;">
-            Return to App
-          </a>
+        <head><title>Payment Processing Error - Campus Life</title></head>
+        <body style="font-family: Arial; text-align: center; padding: 50px; background: #fee2e2;">
+          <h1 style="color: #dc2626;">❌ Redirect Error</h1>
+          <p>Your payment was processed, but there was an issue redirecting back to the app.</p>
+          <p style="font-size: 14px; color: #6b7280;">Please open Campus Life manually and check your payment status.</p>
+          <button onclick="window.location.href='campuslife://paypal-return?error=redirect_failed'" 
+                 style="background: #ef4444; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer;">
+            Try Opening App
+          </button>
         </body>
       </html>
     `;
@@ -176,4 +221,4 @@ module.exports = async function handler(req, res) {
     res.setHeader('Content-Type', 'text/html');
     res.status(500).send(errorHtml);
   }
-}
+};
