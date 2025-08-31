@@ -22,14 +22,14 @@ module.exports = async function handler(req, res) {
   try {
     console.log('PayPal success - Query params:', req.query);
     
-    const { token, PayerID, transactionId } = req.query;
+    const { token, PayerID, transactionId, paymentId } = req.query;
 
     if (!token) {
       return res.status(400).json({ success: false, error: 'Missing PayPal order token' });
     }
 
-    // Extract transaction ID from the query or use a default
-    const finalTransactionId = transactionId || 'unknown';
+    // Extract transaction ID from the query, paymentId, or use a default
+    const finalTransactionId = transactionId || paymentId || 'unknown';
     
     // Create deep link URL for our app
     const redirectUrl = `campuslife://paypal-return?transactionId=${finalTransactionId}&orderId=${token}&payerID=${PayerID}&status=success`;
