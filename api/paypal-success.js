@@ -1,4 +1,5 @@
 // Vercel serverless function to handle PayPal P2P payment success returns
+// Updated for item payment support
 module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
