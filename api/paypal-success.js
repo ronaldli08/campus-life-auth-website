@@ -45,99 +45,127 @@ module.exports = async function handler(req, res) {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
             body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-              background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              background-color: #f8fafc;
               min-height: 100vh;
               display: flex;
               align-items: center;
               justify-content: center;
               margin: 0;
-              padding: 20px;
+              padding: 24px;
+              color: #1e293b;
             }
             .container {
-              background: white;
+              background: #ffffff;
               padding: 40px;
-              border-radius: 20px;
+              border-radius: 16px;
               text-align: center;
-              box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+              border: 1px solid #e2e8f0;
               max-width: 400px;
               width: 100%;
             }
-            .success { 
-              color: #10b981; 
-              margin-bottom: 20px; 
-              font-size: 48px;
+            .logo {
+              width: 64px;
+              height: 64px;
+              background: #10b981;
+              border-radius: 12px;
+              margin: 0 auto 24px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: 700;
+              font-size: 24px;
             }
             .title {
-              color: #111827;
-              margin-bottom: 10px;
-              font-size: 24px;
-              font-weight: bold;
+              color: #1e293b;
+              margin-bottom: 12px;
+              font-size: 28px;
+              font-weight: 900;
+              letter-spacing: -0.025em;
             }
             .description {
-              color: #6b7280;
-              margin-bottom: 30px;
+              color: #64748b;
+              margin-bottom: 24px;
               font-size: 16px;
+              font-weight: 500;
               line-height: 1.5;
             }
             .button {
-              background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+              background: #3b82f6;
               color: white;
-              padding: 18px 36px;
+              padding: 16px 24px;
               text-decoration: none;
               border-radius: 12px;
-              font-weight: bold;
-              display: inline-block;
-              margin: 10px 0;
+              font-weight: 600;
               font-size: 16px;
-              transition: transform 0.2s;
+              display: inline-block;
+              margin: 16px 0;
+              transition: background-color 0.2s, transform 0.1s;
               border: none;
               cursor: pointer;
               width: 200px;
             }
             .button:hover {
-              transform: translateY(-2px);
+              background: #2563eb;
+              transform: translateY(-1px);
             }
             .countdown {
-              color: #9ca3af;
+              color: #3b82f6;
               font-size: 14px;
-              margin-top: 20px;
+              font-weight: 600;
+              margin-top: 16px;
             }
             .status {
               background: #f0fdf4;
-              border: 1px solid #10b981;
+              border: 2px solid #d1fae5;
+              border-radius: 12px;
+              padding: 20px;
+              margin: 24px 0;
+              color: #10b981;
+              font-weight: 500;
+            }
+            .status-title {
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 4px;
+            }
+            .debug {
+              background: #f1f5f9;
+              border: 1px solid #e2e8f0;
               border-radius: 8px;
               padding: 16px;
               margin: 20px 0;
-              color: #059669;
-            }
-            .debug {
-              background: #f3f4f6;
-              border-radius: 8px;
-              padding: 12px;
-              margin: 20px 0;
               font-size: 12px;
-              color: #6b7280;
+              color: #64748b;
               text-align: left;
+              font-weight: 500;
+            }
+            @media (max-width: 480px) {
+              body { padding: 16px; }
+              .container { padding: 24px; }
+              .title { font-size: 24px; }
+              .logo { width: 56px; height: 56px; font-size: 20px; }
             }
           </style>
         </head>
         <body>
           <div class="container">
-            <div class="success">🎉</div>
-            <h1 class="title">Payment Completed!</h1>
+            <div class="logo">CL</div>
+            <h1 class="title">Payment Completed</h1>
             <div class="status">
-              <strong>PayPal Payment Successful</strong><br>
-              Your payment has been processed successfully.
+              <div class="status-title">PayPal Payment Successful</div>
+              <div>Your payment has been processed successfully</div>
             </div>
             <p class="description">
               You will be automatically redirected to Campus Life to complete the verification process.
             </p>
             <button onclick="openApp()" class="button">Return to Campus Life</button>
-            <p class="countdown">Auto-redirecting in <span id="countdown">3</span> seconds...</p>
+            <p class="countdown">Auto-redirecting in <span id="countdown">3</span> seconds</p>
             
             <div class="debug">
-              <strong>Debug Info:</strong><br>
+              <strong>Debug Information:</strong><br>
               Transaction ID: ${finalTransactionId}<br>
               Order ID: ${token}<br>
               Payer ID: ${PayerID || 'N/A'}
@@ -206,15 +234,93 @@ module.exports = async function handler(req, res) {
     const errorHtml = `
       <!DOCTYPE html>
       <html>
-        <head><title>Payment Processing Error - Campus Life</title></head>
-        <body style="font-family: Arial; text-align: center; padding: 50px; background: #fee2e2;">
-          <h1 style="color: #dc2626;">❌ Redirect Error</h1>
-          <p>Your payment was processed, but there was an issue redirecting back to the app.</p>
-          <p style="font-size: 14px; color: #6b7280;">Please open Campus Life manually and check your payment status.</p>
-          <button onclick="window.location.href='campuslife://paypal-return?error=redirect_failed'" 
-                 style="background: #ef4444; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer;">
-            Try Opening App
-          </button>
+        <head>
+          <title>Payment Processing Error - Campus Life</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              background-color: #f8fafc;
+              min-height: 100vh;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0;
+              padding: 24px;
+              color: #1e293b;
+            }
+            .container {
+              background: #ffffff;
+              padding: 40px;
+              border-radius: 16px;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+              border: 1px solid #e2e8f0;
+              max-width: 400px;
+              width: 100%;
+            }
+            .logo {
+              width: 64px;
+              height: 64px;
+              background: #dc2626;
+              border-radius: 12px;
+              margin: 0 auto 24px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: 700;
+              font-size: 24px;
+            }
+            .title {
+              color: #1e293b;
+              margin-bottom: 12px;
+              font-size: 24px;
+              font-weight: 900;
+            }
+            .error-message {
+              background: #fef2f2;
+              border: 2px solid #fecaca;
+              border-radius: 12px;
+              padding: 20px;
+              margin: 24px 0;
+              color: #dc2626;
+              font-weight: 500;
+            }
+            .description {
+              color: #64748b;
+              margin-bottom: 24px;
+              font-size: 14px;
+              font-weight: 500;
+            }
+            .button {
+              background: #dc2626;
+              color: white;
+              padding: 16px 24px;
+              border-radius: 12px;
+              font-weight: 600;
+              font-size: 16px;
+              border: none;
+              cursor: pointer;
+              transition: background-color 0.2s;
+            }
+            .button:hover {
+              background: #b91c1c;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="logo">!</div>
+            <h1 class="title">Redirect Error</h1>
+            <div class="error-message">
+              Your payment was processed, but there was an issue redirecting back to the app.
+            </div>
+            <p class="description">Please open Campus Life manually and check your payment status.</p>
+            <button onclick="window.location.href='campuslife://paypal-return?error=redirect_failed'" class="button">
+              Try Opening App
+            </button>
+          </div>
         </body>
       </html>
     `;

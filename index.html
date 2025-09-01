@@ -13,60 +13,73 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #f8fafc;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 24px;
+            color: #1e293b;
         }
         
         .container {
-            background: white;
-            border-radius: 20px;
+            background: #ffffff;
+            border-radius: 16px;
             padding: 40px;
             max-width: 500px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
         }
         
         .logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            margin: 0 auto 20px;
+            width: 64px;
+            height: 64px;
+            background: #60a5fa;
+            border-radius: 12px;
+            margin: 0 auto 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
             color: white;
+            font-weight: 700;
+            font-size: 24px;
         }
         
         h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
+            color: #1e293b;
+            margin-bottom: 12px;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -0.025em;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 32px;
         }
         
         .status-message {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 10px;
+            margin: 24px 0;
+            padding: 20px;
+            border-radius: 12px;
             font-size: 16px;
+            font-weight: 500;
         }
         
         .loading {
             background: #f0f9ff;
-            color: #0369a1;
-            border: 2px solid #e0f2fe;
+            color: #3b82f6;
+            border: 2px solid #e0e7ff;
         }
         
         .success {
             background: #f0fdf4;
-            color: #166534;
-            border: 2px solid #dcfce7;
+            color: #10b981;
+            border: 2px solid #d1fae5;
         }
         
         .error {
@@ -75,41 +88,74 @@
             border: 2px solid #fecaca;
         }
         
+        .status-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .status-description {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .status-subtitle {
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+        
         .button {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #3b82f6;
             color: white;
-            padding: 15px 30px;
+            padding: 16px 24px;
             text-decoration: none;
-            border-radius: 10px;
-            font-weight: bold;
-            margin: 20px 10px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 16px 8px;
+            transition: background-color 0.2s, transform 0.1s;
+            border: none;
+            cursor: pointer;
         }
         
         .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        
+        .button:active {
+            transform: translateY(0);
         }
         
         .secondary-button {
-            background: #6b7280;
-            color: white;
-            padding: 12px 24px;
-            border: none;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            padding: 12px 20px;
             border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
             cursor: pointer;
-            margin: 10px;
+            margin: 8px;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .secondary-button:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
         }
         
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f4f6;
-            border-top: 4px solid #667eea;
+            width: 32px;
+            height: 32px;
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #3b82f6;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
+            margin: 16px auto;
         }
         
         @keyframes spin {
@@ -121,44 +167,70 @@
             display: none;
         }
         
+        .countdown {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        
         footer {
-            margin-top: 30px;
-            color: #6b7280;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
             font-size: 14px;
+            font-weight: 500;
+        }
+        
+        footer .support {
+            margin-top: 8px;
+            color: #94a3b8;
+            font-size: 12px;
         }
         
         @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+            
             .container {
-                padding: 20px;
-                margin: 10px;
+                padding: 24px;
             }
             
             h1 {
-                font-size: 24px;
+                font-size: 28px;
+            }
+            
+            .logo {
+                width: 56px;
+                height: 56px;
+                font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">🎓</div>
+        <div class="logo">CL</div>
         <h1>Campus Life</h1>
+        <div class="subtitle">Connecting families through wellness</div>
         
         <!-- Loading State -->
         <div id="loading-state">
             <div class="status-message loading">
                 <div class="spinner"></div>
-                <p>Verifying your email address...</p>
-                <small>Please wait while we process your verification.</small>
+                <div class="status-title">Verifying Email</div>
+                <div class="status-description">Please wait while we process your verification</div>
             </div>
         </div>
         
         <!-- Success State -->
         <div id="success-state" class="hidden">
             <div class="status-message success">
-                <h2 id="success-title">✅ Email Verified Successfully!</h2>
-                <p id="success-message">Your Campus Life account is now active.</p>
-                <p id="countdown-container">You will be redirected to the app in <span id="countdown">5</span> seconds...</p>
+                <div class="status-title" id="success-title">Email Verified Successfully</div>
+                <div class="status-description" id="success-message">Your Campus Life account is now active</div>
+                <div class="status-subtitle" id="countdown-container">
+                    Redirecting to app in <span id="countdown" class="countdown">5</span> seconds...
+                </div>
             </div>
             <a href="" id="success-button" class="button">Open Campus Life App</a>
             <button onclick="copyAppLink()" id="copy-button" class="secondary-button">Copy App Link</button>
@@ -167,17 +239,19 @@
         <!-- Error State -->
         <div id="error-state" class="hidden">
             <div class="status-message error">
-                <h2>❌ Verification Failed</h2>
-                <p id="error-message">The verification link is invalid or has expired.</p>
-                <small>Please request a new verification email from the app.</small>
+                <div class="status-title">Verification Failed</div>
+                <div class="status-description" id="error-message">
+                    The verification link is invalid or has expired
+                </div>
+                <div class="status-subtitle">Please request a new verification email from the app</div>
             </div>
             <a href="campuslife://verification-failed" class="button">Return to App</a>
             <button onclick="location.reload()" class="secondary-button">Try Again</button>
         </div>
         
         <footer>
-            <p>Campus Life - Connecting Families Through Wellness</p>
-            <small>Having trouble? Contact support at help@campus-life.app</small>
+            <div>Campus Life</div>
+            <div class="support">Having trouble? Contact support at help@campus-life.app</div>
         </footer>
     </div>
 
@@ -297,15 +371,15 @@
             document.getElementById('success-state').classList.remove('hidden');
             
             if (type === 'password_reset') {
-                document.getElementById('success-title').textContent = '🔓 Password Reset Link Verified!';
-                document.getElementById('success-message').textContent = 'Click the button below to set your new password.';
-                document.getElementById('countdown-container').textContent = 'You will be redirected to set your new password in ' + document.getElementById('countdown').outerHTML + ' seconds...';
+                document.getElementById('success-title').textContent = 'Password Reset Link Verified';
+                document.getElementById('success-message').textContent = 'Click the button below to set your new password';
+                document.getElementById('countdown-container').innerHTML = 'Redirecting to set your new password in <span id="countdown" class="countdown">5</span> seconds...';
                 document.getElementById('success-button').textContent = 'Set New Password';
                 document.getElementById('copy-button').style.display = 'none';
             } else {
-                document.getElementById('success-title').textContent = '✅ Email Verified Successfully!';
-                document.getElementById('success-message').textContent = 'Your Campus Life account is now active.';
-                document.getElementById('countdown-container').textContent = 'You will be redirected to the app in ' + document.getElementById('countdown').outerHTML + ' seconds...';
+                document.getElementById('success-title').textContent = 'Email Verified Successfully';
+                document.getElementById('success-message').textContent = 'Your Campus Life account is now active';
+                document.getElementById('countdown-container').innerHTML = 'Redirecting to app in <span id="countdown" class="countdown">5</span> seconds...';
                 document.getElementById('success-button').textContent = 'Open Campus Life App';
                 document.getElementById('copy-button').style.display = 'inline-block';
             }

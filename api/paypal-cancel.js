@@ -40,87 +40,113 @@ module.exports = async function handler(req, res) {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
             body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-              background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              background-color: #f8fafc;
               min-height: 100vh;
               display: flex;
               align-items: center;
               justify-content: center;
               margin: 0;
-              padding: 20px;
+              padding: 24px;
+              color: #1e293b;
             }
             .container {
-              background: white;
+              background: #ffffff;
               padding: 40px;
-              border-radius: 20px;
+              border-radius: 16px;
               text-align: center;
-              box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+              border: 1px solid #e2e8f0;
               max-width: 400px;
               width: 100%;
             }
-            .cancelled { 
-              color: #f59e0b; 
-              margin-bottom: 20px; 
-              font-size: 48px;
+            .logo {
+              width: 64px;
+              height: 64px;
+              background: #f59e0b;
+              border-radius: 12px;
+              margin: 0 auto 24px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: 700;
+              font-size: 24px;
             }
             .title {
-              color: #111827;
-              margin-bottom: 10px;
-              font-size: 24px;
-              font-weight: bold;
+              color: #1e293b;
+              margin-bottom: 12px;
+              font-size: 28px;
+              font-weight: 900;
+              letter-spacing: -0.025em;
             }
             .description {
-              color: #6b7280;
-              margin-bottom: 30px;
+              color: #64748b;
+              margin-bottom: 24px;
               font-size: 16px;
+              font-weight: 500;
               line-height: 1.5;
             }
             .button {
-              background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+              background: #3b82f6;
               color: white;
-              padding: 18px 36px;
+              padding: 16px 24px;
               text-decoration: none;
               border-radius: 12px;
-              font-weight: bold;
-              display: inline-block;
-              margin: 10px 0;
+              font-weight: 600;
               font-size: 16px;
-              transition: transform 0.2s;
+              display: inline-block;
+              margin: 16px 0;
+              transition: background-color 0.2s, transform 0.1s;
               border: none;
               cursor: pointer;
               width: 200px;
             }
             .button:hover {
-              transform: translateY(-2px);
+              background: #2563eb;
+              transform: translateY(-1px);
             }
             .countdown {
-              color: #9ca3af;
+              color: #3b82f6;
               font-size: 14px;
-              margin-top: 20px;
+              font-weight: 600;
+              margin-top: 16px;
             }
             .status {
               background: #fffbeb;
-              border: 1px solid #f59e0b;
-              border-radius: 8px;
-              padding: 16px;
-              margin: 20px 0;
-              color: #d97706;
+              border: 2px solid #fbbf24;
+              border-radius: 12px;
+              padding: 20px;
+              margin: 24px 0;
+              color: #f59e0b;
+              font-weight: 500;
+            }
+            .status-title {
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 4px;
+            }
+            @media (max-width: 480px) {
+              body { padding: 16px; }
+              .container { padding: 24px; }
+              .title { font-size: 24px; }
+              .logo { width: 56px; height: 56px; font-size: 20px; }
             }
           </style>
         </head>
         <body>
           <div class="container">
-            <div class="cancelled">⚠️</div>
+            <div class="logo">CL</div>
             <h1 class="title">Payment Cancelled</h1>
             <div class="status">
-              <strong>PayPal Payment Cancelled</strong><br>
-              You cancelled the payment process.
+              <div class="status-title">PayPal Payment Cancelled</div>
+              <div>You cancelled the payment process</div>
             </div>
             <p class="description">
               No payment was processed. You can try again or return to Campus Life.
             </p>
             <button onclick="openApp()" class="button">Return to Campus Life</button>
-            <p class="countdown">Auto-redirecting in <span id="countdown">3</span> seconds...</p>
+            <p class="countdown">Auto-redirecting in <span id="countdown">3</span> seconds</p>
           </div>
           <script>
             let countdown = 3;
@@ -174,14 +200,86 @@ module.exports = async function handler(req, res) {
     const errorHtml = `
       <!DOCTYPE html>
       <html>
-        <head><title>Error - Campus Life</title></head>
-        <body style="font-family: Arial; text-align: center; padding: 50px;">
-          <h1>❌ Error</h1>
-          <p>There was an issue processing the cancellation.</p>
-          <button onclick="window.location.href='campuslife://paypal-return?error=cancel_failed'" 
-                 style="background: #ef4444; color: white; padding: 15px 30px; border: none; border-radius: 10px;">
-            Return to App
-          </button>
+        <head>
+          <title>Error - Campus Life</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              background-color: #f8fafc;
+              min-height: 100vh;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0;
+              padding: 24px;
+              color: #1e293b;
+            }
+            .container {
+              background: #ffffff;
+              padding: 40px;
+              border-radius: 16px;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+              border: 1px solid #e2e8f0;
+              max-width: 400px;
+              width: 100%;
+            }
+            .logo {
+              width: 64px;
+              height: 64px;
+              background: #dc2626;
+              border-radius: 12px;
+              margin: 0 auto 24px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: 700;
+              font-size: 24px;
+            }
+            .title {
+              color: #1e293b;
+              margin-bottom: 12px;
+              font-size: 24px;
+              font-weight: 900;
+            }
+            .error-message {
+              background: #fef2f2;
+              border: 2px solid #fecaca;
+              border-radius: 12px;
+              padding: 20px;
+              margin: 24px 0;
+              color: #dc2626;
+              font-weight: 500;
+            }
+            .button {
+              background: #dc2626;
+              color: white;
+              padding: 16px 24px;
+              border-radius: 12px;
+              font-weight: 600;
+              font-size: 16px;
+              border: none;
+              cursor: pointer;
+              transition: background-color 0.2s;
+            }
+            .button:hover {
+              background: #b91c1c;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="logo">!</div>
+            <h1 class="title">Error</h1>
+            <div class="error-message">
+              There was an issue processing the cancellation.
+            </div>
+            <button onclick="window.location.href='campuslife://paypal-return?error=cancel_failed'" class="button">
+              Return to App
+            </button>
+          </div>
         </body>
       </html>
     `;
