@@ -330,10 +330,10 @@
                 
                 console.log('Token is valid, updating database...');
                 
-                // Mark token as used
-                await updateDoc(doc(db, 'verification_tokens', token), { used: true });
-                
                 if (verificationType === 'email_verification') {
+                    // Mark token as used for email verification only
+                    await updateDoc(doc(db, 'verification_tokens', token), { used: true });
+                    
                     // Mark user as verified
                     await updateDoc(doc(db, 'users', tokenData.user_id), {
                         email_verified: true,
@@ -355,6 +355,7 @@
                     showSuccess('email_verification');
                     startCountdown('campuslife://verified');
                 } else if (verificationType === 'password_reset') {
+                    // Don't mark password reset tokens as used here - they get consumed when password is actually changed
                     console.log('Password reset token verified, redirecting to app');
                     showSuccess('password_reset', token);
                     startCountdown(`campuslife://reset-password/${token}`);
