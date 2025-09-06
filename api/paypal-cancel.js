@@ -55,30 +55,31 @@ module.exports = async function handler(req, res) {
               padding: 40px;
               border-radius: 16px;
               text-align: center;
-              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+              box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
               border: 1px solid #e2e8f0;
-              max-width: 400px;
+              max-width: 500px;
               width: 100%;
             }
             .logo {
-              width: 64px;
-              height: 64px;
-              background: #f59e0b;
-              border-radius: 12px;
+              width: 80px;
+              height: 80px;
+              background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+              border-radius: 16px;
               margin: 0 auto 24px;
               display: flex;
               align-items: center;
               justify-content: center;
               color: white;
-              font-weight: 700;
-              font-size: 24px;
+              font-weight: 900;
+              font-size: 28px;
+              box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
             }
             .title {
               color: #1e293b;
-              margin-bottom: 12px;
-              font-size: 28px;
+              margin-bottom: 8px;
+              font-size: 32px;
               font-weight: 900;
-              letter-spacing: -0.025em;
+              letter-spacing: -1px;
             }
             .description {
               color: #64748b;
@@ -88,48 +89,57 @@ module.exports = async function handler(req, res) {
               line-height: 1.5;
             }
             .button {
-              background: #3b82f6;
+              display: inline-block;
+              background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
               color: white;
-              padding: 16px 24px;
+              padding: 16px 32px;
               text-decoration: none;
-              border-radius: 12px;
+              border-radius: 25px;
               font-weight: 600;
               font-size: 16px;
-              display: inline-block;
-              margin: 16px 0;
-              transition: background-color 0.2s, transform 0.1s;
+              margin: 16px 8px;
+              transition: all 0.2s ease;
               border: none;
               cursor: pointer;
-              width: 200px;
+              box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
             }
             .button:hover {
-              background: #2563eb;
-              transform: translateY(-1px);
+              background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+              transform: translateY(-2px);
+              box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+            }
+            .button:active {
+              transform: translateY(0);
+              box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
             }
             .countdown {
-              color: #3b82f6;
+              color: #f59e0b;
               font-size: 14px;
-              font-weight: 600;
+              font-weight: 700;
               margin-top: 16px;
+              background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
             }
             .status {
-              background: #fffbeb;
+              background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
               border: 2px solid #fbbf24;
-              border-radius: 12px;
-              padding: 20px;
+              border-radius: 16px;
+              padding: 24px;
               margin: 24px 0;
               color: #f59e0b;
               font-weight: 500;
             }
             .status-title {
-              font-size: 16px;
-              font-weight: 700;
-              margin-bottom: 4px;
+              font-size: 24px;
+              font-weight: 800;
+              margin-bottom: 8px;
             }
             @media (max-width: 480px) {
               body { padding: 16px; }
               .container { padding: 24px; }
-              .title { font-size: 24px; }
+              .title { font-size: 28px; }
               .logo { width: 56px; height: 56px; font-size: 20px; }
             }
           </style>
@@ -220,52 +230,70 @@ module.exports = async function handler(req, res) {
               padding: 40px;
               border-radius: 16px;
               text-align: center;
-              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+              box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
               border: 1px solid #e2e8f0;
-              max-width: 400px;
+              max-width: 500px;
               width: 100%;
             }
             .logo {
-              width: 64px;
-              height: 64px;
-              background: #dc2626;
-              border-radius: 12px;
+              width: 80px;
+              height: 80px;
+              background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
+              border-radius: 16px;
               margin: 0 auto 24px;
               display: flex;
               align-items: center;
               justify-content: center;
               color: white;
-              font-weight: 700;
-              font-size: 24px;
+              font-weight: 900;
+              font-size: 28px;
+              box-shadow: 0 4px 12px rgba(248, 113, 113, 0.3);
             }
             .title {
               color: #1e293b;
-              margin-bottom: 12px;
-              font-size: 24px;
+              margin-bottom: 8px;
+              font-size: 32px;
               font-weight: 900;
+              letter-spacing: -1px;
             }
             .error-message {
-              background: #fef2f2;
+              background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
               border: 2px solid #fecaca;
-              border-radius: 12px;
-              padding: 20px;
+              border-radius: 16px;
+              padding: 24px;
               margin: 24px 0;
               color: #dc2626;
               font-weight: 500;
+              font-size: 16px;
             }
             .button {
-              background: #dc2626;
+              display: inline-block;
+              background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
               color: white;
-              padding: 16px 24px;
-              border-radius: 12px;
+              padding: 16px 32px;
+              border-radius: 25px;
               font-weight: 600;
               font-size: 16px;
               border: none;
               cursor: pointer;
-              transition: background-color 0.2s;
+              transition: all 0.2s ease;
+              text-decoration: none;
+              box-shadow: 0 4px 12px rgba(248, 113, 113, 0.3);
             }
             .button:hover {
-              background: #b91c1c;
+              background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+              transform: translateY(-2px);
+              box-shadow: 0 6px 16px rgba(248, 113, 113, 0.4);
+            }
+            .button:active {
+              transform: translateY(0);
+              box-shadow: 0 2px 8px rgba(248, 113, 113, 0.3);
+            }
+            @media (max-width: 480px) {
+              body { padding: 16px; }
+              .container { padding: 24px; }
+              .title { font-size: 28px; }
+              .logo { width: 56px; height: 56px; font-size: 20px; }
             }
           </style>
         </head>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Life Verification - Test Links</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            padding: 40px;
+            color: #1e293b;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+        
+        h1 {
+            color: #1e293b;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+        
+        h2 {
+            color: #3b82f6;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 24px 0 12px 0;
+        }
+        
+        .test-link {
+            display: block;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin: 8px 0;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+        
+        .test-link:hover {
+            transform: translateY(-1px);
+        }
+        
+        .error-link {
+            background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
+        }
+        
+        .success-link {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        }
+        
+        .description {
+            color: #64748b;
+            font-size: 14px;
+            margin: 4px 0 8px 0;
+        }
+        
+        .domain-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        
+        code {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Campus Life Verification Test Pages</h1>
+        
+        <div>
+            <label for="domain">Your Vercel Domain:</label>
+            <input type="text" id="domain" class="domain-input" placeholder="your-app-name.vercel.app" value="campus-life-auth-website.vercel.app">
+            <div class="description">Enter your domain without https://</div>
+        </div>
+
+        <h2>📧 Email Verification</h2>
+        <div class="description">Test different states of email verification</div>
+        <a href="#" class="test-link" data-path="/verify/email_verification/invalid-token">❌ Invalid Token (Error State)</a>
+        <a href="#" class="test-link" data-path="/verify/email_verification/expired-token">⏰ Expired Token (Error State)</a>
+        
+        <h2>🔒 Password Reset</h2>
+        <div class="description">Test password reset verification</div>
+        <a href="#" class="test-link" data-path="/verify/password_reset/invalid-token">❌ Invalid Reset Token (Error State)</a>
+        <a href="#" class="test-link" data-path="/verify/password_reset/expired-reset-token">⏰ Expired Reset Token (Error State)</a>
+
+        <h2>💳 PayPal Success</h2>
+        <div class="description">Test PayPal payment success page</div>
+        <a href="#" class="test-link success-link" data-path="/api/paypal-success?token=test-order-12345&PayerID=TESTPAYER123&transactionId=TXN789">✅ Payment Success</a>
+        <a href="#" class="test-link success-link" data-path="/api/paypal-success?token=order-67890&PayerID=ANOTHERPAYER&transactionId=TXN999&amount=25.00">✅ Success with Amount</a>
+
+        <h2>🚫 PayPal Cancel</h2>
+        <div class="description">Test PayPal payment cancellation page</div>
+        <a href="#" class="test-link error-link" data-path="/api/paypal-cancel?token=cancelled-order-123">❌ Payment Cancelled</a>
+        <a href="#" class="test-link error-link" data-path="/api/paypal-cancel?token=timeout-order-456&reason=timeout">⏰ Payment Timeout</a>
+
+        <h2>🔧 Developer Testing</h2>
+        <div class="description">Use browser console to test UI states</div>
+        <div style="background: #f1f5f9; padding: 16px; border-radius: 8px; margin: 12px 0;">
+            <strong>Console Commands:</strong><br>
+            <code>showSuccess('email_verification')</code> - Show success state<br>
+            <code>showError('Custom error message')</code> - Show error state<br>
+            <code>document.getElementById('loading-state').classList.remove('hidden')</code> - Show loading
+        </div>
+    </div>
+
+    <script>
+        const domainInput = document.getElementById('domain');
+        const testLinks = document.querySelectorAll('.test-link');
+        
+        // Update links when domain changes
+        function updateLinks() {
+            const domain = domainInput.value.trim();
+            if (!domain) return;
+            
+            testLinks.forEach(link => {
+                const path = link.dataset.path;
+                link.href = `https://${domain}${path}`;
+            });
+        }
+        
+        domainInput.addEventListener('input', updateLinks);
+        
+        // Try to get domain from current URL if testing locally
+        if (window.location.hostname !== 'localhost') {
+            domainInput.value = window.location.hostname;
+            updateLinks();
+        }
+        
+        // Add target="_blank" to all links
+        testLinks.forEach(link => {
+            link.target = '_blank';
+        });
+    </script>
+</body>
+</html>

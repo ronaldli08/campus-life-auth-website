@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification - Campus Life</title>
+    <title>Campus Life - Verification</title>
     <style>
         * {
             margin: 0;
@@ -29,30 +29,31 @@
             max-width: 500px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
             border: 1px solid #e2e8f0;
         }
         
         .logo {
-            width: 64px;
-            height: 64px;
-            background: #60a5fa;
-            border-radius: 12px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 16px;
             margin: 0 auto 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 700;
-            font-size: 24px;
+            font-weight: 900;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
         }
         
         h1 {
             color: #1e293b;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             font-size: 32px;
             font-weight: 900;
-            letter-spacing: -0.025em;
+            letter-spacing: -1px;
         }
         
         .subtitle {
@@ -64,95 +65,100 @@
         
         .status-message {
             margin: 24px 0;
-            padding: 20px;
-            border-radius: 12px;
+            padding: 24px;
+            border-radius: 16px;
             font-size: 16px;
             font-weight: 500;
         }
         
         .loading {
-            background: #f0f9ff;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
             color: #3b82f6;
             border: 2px solid #e0e7ff;
         }
         
         .success {
-            background: #f0fdf4;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
             color: #10b981;
             border: 2px solid #d1fae5;
         }
         
         .error {
-            background: #fef2f2;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
             color: #dc2626;
             border: 2px solid #fecaca;
         }
         
         .status-title {
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 24px;
+            font-weight: 800;
             margin-bottom: 8px;
         }
         
         .status-description {
             font-size: 16px;
             font-weight: 500;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
+            opacity: 0.9;
         }
         
         .status-subtitle {
             font-size: 14px;
             font-weight: 500;
-            opacity: 0.8;
+            opacity: 0.7;
         }
         
         .button {
             display: inline-block;
-            background: #3b82f6;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
             color: white;
-            padding: 16px 24px;
+            padding: 16px 32px;
             text-decoration: none;
-            border-radius: 12px;
+            border-radius: 25px;
             font-weight: 600;
             font-size: 16px;
             margin: 16px 8px;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: all 0.2s ease;
             border: none;
             cursor: pointer;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
         }
         
         .button:hover {
-            background: #2563eb;
-            transform: translateY(-1px);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(96, 165, 250, 0.4);
         }
         
         .button:active {
             transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(96, 165, 250, 0.3);
         }
         
         .secondary-button {
-            background: #f1f5f9;
-            color: #475569;
+            background: #ffffff;
+            color: #64748b;
             border: 1px solid #e2e8f0;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
             font-weight: 500;
             font-size: 14px;
             cursor: pointer;
             margin: 8px;
-            transition: background-color 0.2s, border-color 0.2s;
+            transition: all 0.2s ease;
         }
         
         .secondary-button:hover {
-            background: #e2e8f0;
+            background: #f8fafc;
             border-color: #cbd5e1;
+            transform: translateY(-1px);
         }
         
         .spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid #e2e8f0;
-            border-top: 3px solid #3b82f6;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e7ff;
+            border-top: 4px solid #60a5fa;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 16px auto;
@@ -168,8 +174,12 @@
         }
         
         .countdown {
-            color: #3b82f6;
-            font-weight: 600;
+            color: #60a5fa;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         footer {
@@ -185,6 +195,11 @@
             margin-top: 8px;
             color: #94a3b8;
             font-size: 12px;
+        }
+        
+        footer .brand {
+            font-weight: 700;
+            color: #1e293b;
         }
         
         @media (max-width: 480px) {
@@ -250,7 +265,7 @@
         </div>
         
         <footer>
-            <div>Campus Life</div>
+            <div class="brand">Campus Life</div>
             <div class="support">Having trouble? Contact support at help@campus-life.app</div>
         </footer>
     </div>
