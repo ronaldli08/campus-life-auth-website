@@ -218,6 +218,7 @@ module.exports = async function handler(req, res) {
             </div>
             
             <button onclick="openApp()" class="button">Return to Campus Life</button>
+            <button onclick="copyLink()" class="button" style="background: #ffffff; color: #64748b; border: 1px solid #e2e8f0;">Copy App Link</button>
             
             <footer>
               <div class="brand">Campus Life</div>
@@ -240,6 +241,21 @@ module.exports = async function handler(req, res) {
                   console.log('Fallback redirect failed:', e);
                 }
               }, 500);
+            }
+            
+            function copyLink() {
+              navigator.clipboard.writeText('${redirectUrl}').then(() => {
+                alert('App link copied! Paste it in your browser or terminal to test the deep link.');
+              }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = '${redirectUrl}';
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('App link copied! Paste it in your browser or terminal to test the deep link.');
+              });
             }
             
             // Countdown timer

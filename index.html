@@ -249,6 +249,10 @@
             </div>
             <a href="" id="success-button" class="button">Open Campus Life App</a>
             <button onclick="copyAppLink()" id="copy-button" class="secondary-button">Copy App Link</button>
+            <div id="debug-info" style="margin-top: 20px; padding: 15px; background: #f1f5f9; border-radius: 8px; font-size: 12px; color: #475569; display: none;">
+              <strong>Debug Info (for testing):</strong><br>
+              <span id="debug-link"></span>
+            </div>
         </div>
         
         <!-- Error State -->
@@ -426,8 +430,14 @@
         }
         
         function copyAppLink() {
-            navigator.clipboard.writeText('campuslife://verified').then(() => {
-                alert('App link copied to clipboard!');
+            const link = document.getElementById('success-button').href || 'campuslife://verified';
+            navigator.clipboard.writeText(link).then(() => {
+                alert('App link copied to clipboard! Paste in browser/terminal to test.');
+                // Show debug info
+                const debugInfo = document.getElementById('debug-info');
+                const debugLink = document.getElementById('debug-link');
+                debugLink.textContent = link;
+                debugInfo.style.display = 'block';
             }).catch(() => {
                 alert('Could not copy link. Please open the Campus Life app manually.');
             });
