@@ -29,18 +29,38 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Missing token or type' });
     }
 
-    // For now, return success to test the flow
-    // In production, you'd verify the token with Firebase
     console.log('Received verification request:', { token, type });
     
-    // Simulate successful verification
-    return res.status(200).json({
-      success: true,
-      userId: 'test-user-id',
-      email: 'test@example.com',
-      type: type,
-      message: 'Verification successful (test mode)'
+    // Call Firebase Cloud Function to verify token
+    const firebaseEndpoint = type === 'email_verification' 
+      ? 'https://us-central1-campus-life-b0fd3.cloudfunctions.net/verifyEmailHttp'
+      : 'https://us-central1-campus-life-b0fd3.cloudfunctions.net/resetPasswordHttp';
+    
+    const firebaseResponse = await fetch(firebaseEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token })
     });
+
+    const result = await firebaseResponse.json();
+    
+    if (result.success) {
+      console.log('Verification successful:', result);
+      return res.status(200).json({
+        success: true,
+        userId: result.userId,
+        type: type,
+        message: result.message || 'Verification successful'
+      });
+    } else {
+      console.error('Firebase verification failed:', result.error);
+      return res.status(400).json({
+        success: false,
+        error: result.error || 'Verification failed'
+      });
+    }
 
   } catch (error) {
     console.error('Token verification error:', error);
