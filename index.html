@@ -295,89 +295,36 @@
             try {
                 console.log('Starting verification for:', { token, verificationType });
                 
-                // Wait for Firebase modules to load
-                while (!window.firebaseApp) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
+                // Use secure API endpoint instead of direct Firestore access
+                console.log('Calling API endpoint for verification...');
                 
-                const { initializeApp, getFirestore, doc, getDoc, updateDoc } = window.firebaseApp;
+                const response = await fetch('/api/verifyToken', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        type: verificationType
+                    })
+                });
                 
-                // Initialize Firebase
-                const firebaseConfig = {
-                    apiKey: "AIzaSyC8j70Zk-rxngvd6eOHlrsQ0dIePKj4nks",
-                    authDomain: "campus-life-b0fd3.firebaseapp.com",
-                    projectId: "campus-life-b0fd3",
-                    storageBucket: "campus-life-b0fd3.firebasestorage.app",
-                    messagingSenderId: "1028408297935",
-                    appId: "1:1028408297935:web:45a5f47a3a2d14f7482aba",
-                };
-
-                const app = initializeApp(firebaseConfig);
-                const db = getFirestore(app);
+                const result = await response.json();
+                console.log('API verification result:', result);
                 
-                console.log('Firebase initialized, checking token...');
-                
-                // Get verification token from Firestore
-                const tokenDoc = await getDoc(doc(db, 'verification_tokens', token));
-                
-                if (!tokenDoc.exists()) {
-                    console.log('Token not found in database');
-                    showError('Invalid verification link');
-                    return;
-                }
-                
-                const tokenData = tokenDoc.data();
-                console.log('Token data:', tokenData);
-                
-                // Check if token is already used
-                if (tokenData.used) {
-                    showError('This verification link has already been used');
-                    return;
-                }
-                
-                // Check if token is expired
-                if (tokenData.expires_at.toDate() < new Date()) {
-                    showError('This verification link has expired');
-                    return;
-                }
-                
-                // Check if token type matches
-                if (tokenData.type !== verificationType) {
-                    showError('Invalid verification link type');
-                    return;
-                }
-                
-                console.log('Token is valid, updating database...');
-                
-                if (verificationType === 'email_verification') {
-                    // Mark token as used for email verification only
-                    await updateDoc(doc(db, 'verification_tokens', token), { used: true });
+                if (result.success) {
+                    console.log('Verification successful!');
                     
-                    // Mark user as verified
-                    await updateDoc(doc(db, 'users', tokenData.user_id), {
-                        email_verified: true,
-                        updated_at: new Date()
-                    });
-                    
-                    // Also update profiles collection if it exists
-                    try {
-                        await updateDoc(doc(db, 'profiles', tokenData.user_id), {
-                            email_verified: true,
-                            updated_at: new Date()
-                        });
-                        console.log('Profile updated successfully');
-                    } catch (profileError) {
-                        console.log('Profile update skipped (might not exist)');
+                    if (verificationType === 'email_verification') {
+                        showSuccess('email_verification');
+                        startCountdown('campuslife://verified');
+                    } else if (verificationType === 'password_reset') {
+                        showSuccess('password_reset', token);
+                        startCountdown(`campuslife://reset-password/${token}`);
                     }
-                    
-                    console.log('Email verification complete!');
-                    showSuccess('email_verification');
-                    startCountdown('campuslife://verified');
-                } else if (verificationType === 'password_reset') {
-                    // Don't mark password reset tokens as used here - they get consumed when password is actually changed
-                    console.log('Password reset token verified, redirecting to app');
-                    showSuccess('password_reset', token);
-                    startCountdown(`campuslife://reset-password/${token}`);
+                } else {
+                    console.error('API verification failed:', result.error);
+                    showError(result.error || 'Verification failed');
                 }
                 
             } catch (error) {
