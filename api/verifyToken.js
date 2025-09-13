@@ -34,7 +34,7 @@ module.exports = async function handler(req, res) {
     // Call Firebase Cloud Function to verify token
     const firebaseEndpoint = type === 'email_verification' 
       ? 'https://us-central1-campus-life-b0fd3.cloudfunctions.net/verifyEmailHttp'
-      : 'https://us-central1-campus-life-b0fd3.cloudfunctions.net/resetPasswordHttp';
+      : 'https://us-central1-campus-life-b0fd3.cloudfunctions.net/verifyPasswordResetTokenHttp';
     
     const firebaseResponse = await fetch(firebaseEndpoint, {
       method: 'POST',
